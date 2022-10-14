@@ -5,8 +5,12 @@ using UnityEngine;
 public class SimpleCharacterControl : MonoBehaviour
 {
     private Animator animator;
+    //public GameObject fallguy;
+    public Renderer renderer;
     public Rigidbody rb;
     public Transform cameraTransform;
+    public float simpleGravity;
+    //public bool isGrounded;
     // Start is called before the first frame update
 
     [SerializeField] private float maxSpeed;
@@ -17,18 +21,20 @@ public class SimpleCharacterControl : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        //renderer = GetComponent<Renderer>();
         currentVelocity = new(0, 0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        moveCharacter();
-        rotateCharacter();
+        MoveCharacterHorizontal();
+        RotateCharacter();
+        MoveCharacterVertical();
     }
 
 
-    private void rotateCharacter()
+    private void RotateCharacter()
     {
         if(currentVelocity.sqrMagnitude > 0.1f)
         {
@@ -37,7 +43,7 @@ public class SimpleCharacterControl : MonoBehaviour
         }
     }
 
-    private void moveCharacter()
+    private void MoveCharacterHorizontal()
     {
         //to add together the sideways movements, have a direction vector where i just add to it
         //the fall guy should turn into this direction with soome sort of interpolation, but he immediately moves there???
@@ -67,7 +73,14 @@ public class SimpleCharacterControl : MonoBehaviour
             //print("move right");
         }
 
-
+        if(movementDirection.magnitude > 0.01 || movementDirection.magnitude < -0.01)
+        {
+            animator.SetFloat("Speed", 2);
+        }
+        else
+        {
+            animator.SetFloat("Speed", 0);
+        }
         currentVelocity = movementDirection * maxSpeed;
         rb.MovePosition(rb.position + currentVelocity * Time.deltaTime);
 
@@ -101,5 +114,26 @@ public class SimpleCharacterControl : MonoBehaviour
         {
             currentVelocity.z = -maxSpeed;
         }*/
+    }
+
+    private void MoveCharacterVertical()
+    {
+        RaycastHit hit;
+        Vector3 sphereCastCenter = renderer.bounds.center;
+        float radiusSphere = renderer.bounds.size.x/4;// / 2.0f; //halbe weite der bounding box
+        float distanceSphere = renderer.bounds.size.y / 2;//halb weiter idk
+        if (Physics.SphereCast(sphereCastCenter, radiusSphere, -transform.up, out hit, distanceSphere))
+        {
+            Debug.Log("distance " + hit.distance);
+            animator.SetBool("Grounded", true);
+        } 
+        else
+        {
+            Vector3 moveDown = new(0, simpleGravity, 0);
+            rb.MovePosition(rb.position + moveDown * Time.deltaTime);
+            animator.SetBool("Grounded", false);
+
+        }
+
     }
 }
