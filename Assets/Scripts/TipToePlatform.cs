@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TipToePlatform : MonoBehaviour
 {
-    enum State
+    public enum State
     {
         Default,
         Touched,
@@ -12,6 +12,10 @@ public class TipToePlatform : MonoBehaviour
     }
 
     State state = State.Default;
+    public State state_ 
+    {
+        get => state;
+    }
     MeshRenderer meshRend;
     BoxCollider bCollider;
     public bool isPath;

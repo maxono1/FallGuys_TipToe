@@ -5,6 +5,7 @@ using UnityEngine;
 public class SimpleCharacterControl : MonoBehaviour
 {
     private Animator animator;
+    private bool wasGrounded;
     //public GameObject fallguy;
     public Renderer renderer;
     public Rigidbody rb;
@@ -16,6 +17,7 @@ public class SimpleCharacterControl : MonoBehaviour
     [SerializeField] private float maxSpeed;
     [SerializeField] private float acceleration;
     private Vector3 currentVelocity;
+    public Vector3 startPos;
 
     void Start()
     {
@@ -47,42 +49,47 @@ public class SimpleCharacterControl : MonoBehaviour
     {
         //to add together the sideways movements, have a direction vector where i just add to it
         //the fall guy should turn into this direction with soome sort of interpolation, but he immediately moves there???
-        Vector3 movementDirection = new Vector3(0, 0, 0);
-        Vector3 fwdMovement = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z);
-        Vector3 rightMovement = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z);
+        if(animator.GetBool("Grounded")  == true)
+        {
+            Vector3 movementDirection = new Vector3(0, 0, 0);
+            Vector3 fwdMovement = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z);
+            Vector3 rightMovement = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z);
 
-        if (Input.GetKey("w") && !Input.GetKey("s"))
-        {
-            //print("move forward");
-            movementDirection += fwdMovement * maxSpeed;
+            if (Input.GetKey("w") && !Input.GetKey("s"))
+            {
+                //print("move forward");
+                movementDirection += fwdMovement * maxSpeed;
+
+            }
+            else if (Input.GetKey("s") && !Input.GetKey("w"))
+            {
+                //print("move back");
+                movementDirection -= fwdMovement * maxSpeed;
+            }
+
+            if (Input.GetKey("a") && !Input.GetKey("d"))
+            {
+                movementDirection -= rightMovement * maxSpeed;
+            }
+            else if (Input.GetKey("d") && !Input.GetKey("a"))
+            {
+                movementDirection += rightMovement * maxSpeed;
+                //print("move right");
+            }
+
+            if (movementDirection.magnitude > 0.01 || movementDirection.magnitude < -0.01)
+            {
+                animator.SetFloat("Speed", 2);
+            }
+            else
+            {
+                animator.SetFloat("Speed", 0);
+            }
+            currentVelocity = movementDirection * maxSpeed;
+           //Debug.Log(currentVelocity);
+            rb.transform.position = (rb.position + currentVelocity * Time.deltaTime);
 
         }
-        else if (Input.GetKey("s") && !Input.GetKey("w"))
-        {
-            //print("move back");
-            movementDirection -= fwdMovement * maxSpeed;
-        }
-
-        if (Input.GetKey("a") && !Input.GetKey("d"))
-        {
-            movementDirection -= rightMovement * maxSpeed;
-        }
-        else if (Input.GetKey("d") && !Input.GetKey("a"))
-        {
-            movementDirection += rightMovement * maxSpeed;
-            //print("move right");
-        }
-
-        if(movementDirection.magnitude > 0.01 || movementDirection.magnitude < -0.01)
-        {
-            animator.SetFloat("Speed", 2);
-        }
-        else
-        {
-            animator.SetFloat("Speed", 0);
-        }
-        currentVelocity = movementDirection * maxSpeed;
-        rb.MovePosition(rb.position + currentVelocity * Time.deltaTime);
 
 
 
@@ -124,16 +131,51 @@ public class SimpleCharacterControl : MonoBehaviour
         float distanceSphere = renderer.bounds.size.y / 2;//halb weiter idk
         if (Physics.SphereCast(sphereCastCenter, radiusSphere, -transform.up, out hit, distanceSphere))
         {
-            Debug.Log("distance " + hit.distance);
-            animator.SetBool("Grounded", true);
-        } 
-        else
-        {
-            Vector3 moveDown = new(0, simpleGravity, 0);
-            rb.MovePosition(rb.position + moveDown * Time.deltaTime);
-            animator.SetBool("Grounded", false);
+            //Debug.Log("distance " + hit.distance);
+            //versuchen auf die top von dem objekt zu platzieren + hit.collider.gameObject.GetComponent<Renderer>().bounds.extents.y    
+            //Debug.Log(hit.collider.gameObject.GetComponent<Renderer>().bounds.size.y);
+            //Debug.Log(hit.collider.bounds.);
 
+            //nur nach oben wenn wir neuen bodenkontakt haben und vorher gefallen sind
+            //if(rb.position.y < 0)
+            //{
+            //    rb.MovePosition(new Vector3(rb.position.x, 0, rb.position.z));
+            //}
+            animator.SetBool("Grounded", true);
+            TipToePlatform tipToePlatform = hit.collider.GetComponent<TipToePlatform>();
+            if (tipToePlatform != null)
+            {
+                if (tipToePlatform.state_ == TipToePlatform.State.Dead)
+                {
+                    CharFalls();
+                    animator.SetBool("Grounded", false);//dieser spezialfall benötigt überschreiben von dem Grounded thing
+                }
+                tipToePlatform.CharacterTouches();
+            }
+            
+            
+        } else
+        {
+            CharFalls();
+            //wasGrounded = false;
         }
 
+        if(transform.position.y < -8)
+        {
+            ResetCharacter();
+        }
+    }
+
+    private void CharFalls()
+    {
+        Vector3 moveDown = new(0, simpleGravity, 0);
+        rb.MovePosition(rb.position + moveDown * Time.deltaTime);
+        animator.SetBool("Grounded", false);
+        Debug.Log("Charfalls");
+    }
+
+    private void ResetCharacter()
+    {
+        transform.position = startPos;
     }
 }

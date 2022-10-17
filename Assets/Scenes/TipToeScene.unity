@@ -140,7 +140,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6301604827301178422, guid: bffce625e7b290b46a485123add78156, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6301604827301178422, guid: bffce625e7b290b46a485123add78156, type: 3}
       propertyPath: m_LocalPosition.z
@@ -199,12 +199,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 744797661}
     - target: {fileID: 7746535247670615387, guid: bffce625e7b290b46a485123add78156, type: 3}
+      propertyPath: startPos.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7746535247670615387, guid: bffce625e7b290b46a485123add78156, type: 3}
       propertyPath: acceleration
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7746535247670615387, guid: bffce625e7b290b46a485123add78156, type: 3}
       propertyPath: simpleGravity
-      value: -5
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 7746535247670615387, guid: bffce625e7b290b46a485123add78156, type: 3}
       propertyPath: cameraTransform
@@ -347,6 +351,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!136 &363656752
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363656745}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!137 &744797661 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5069023678153873039, guid: bffce625e7b290b46a485123add78156, type: 3}
@@ -1343,6 +1361,7 @@ GameObject:
   - component: {fileID: 2877618443827624221}
   - component: {fileID: 499337150996604003}
   - component: {fileID: 3158205883610025705}
+  - component: {fileID: 4130733897564503630}
   m_Layer: 0
   m_Name: GoalPlatform
   m_TagString: Untagged
@@ -1350,6 +1369,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!65 &4130733897564503630
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4130733897564503629}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.2, y: 0.83779925, z: 0.24595886}
+  m_Center: {x: 3.2165274e-15, y: -0.2527502, z: -0.09462805}
 --- !u!33 &4285205907857029460
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1836,7 +1868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7660321395608106049, guid: ec98a4e0fded42f47ba343a9dcea8a37, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.2
+      value: -2000
       objectReference: {fileID: 0}
     - target: {fileID: 7660321395608106049, guid: ec98a4e0fded42f47ba343a9dcea8a37, type: 3}
       propertyPath: m_LocalPosition.z
